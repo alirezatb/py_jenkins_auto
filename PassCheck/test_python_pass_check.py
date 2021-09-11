@@ -1,5 +1,5 @@
 import unittest
-from PassCheck import python_pass_check as AccountClass
+import python_pass_check as AccountClass
 
 
 class Test(unittest.TestCase):
