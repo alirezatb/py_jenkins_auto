@@ -1,5 +1,6 @@
 import unittest
-import py_jenkins_auto.python_pass_check as AccountClass
+from PassCheck import python_pass_check as AccountClass
+
 
 class Test(unittest.TestCase):
     accInfo = AccountClass.account()
