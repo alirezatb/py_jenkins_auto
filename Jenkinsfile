@@ -27,5 +27,24 @@ pipeline {
                 }
             }
         }
+        stage('Deliver') {
+            agent any
+            environment {
+                VOLUME = '$(pwd)/.:/src'
+                IMAGE = 'cdrx/pyinstaller-linux:python2'
+            }
+            steps {
+                dir(path: env.BUILD_ID) {
+                    unstash(name: 'compiled-results')
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F python_pass_check.py -F main.py"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts "${env.BUILD_ID}/dist/check_pass"
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+                }
+            }
+        }
     }
 }
