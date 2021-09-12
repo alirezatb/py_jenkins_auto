@@ -1,50 +1,36 @@
 pipeline {
-    agent none
-    stages {
-        stage('Build') {
-            agent {
-                docker {
-                    image 'python:2-alpine'
-                }
-            }
+    agent any
+    stage('Checkout') { // Checkout (git clone ...) the projects repository
+      steps {
+        checkout scm
+      }
+
+    stage('Installing packages') {
             steps {
-                sh 'python -m py_compile main.py python_pass_check.py'
-                stash(name: 'compiled-results', includes: '*.py*')
-            }
-        }
-        stage('Test') {
-            agent {
-                docker {
-                    image 'qnib/pytest'
-                }
-            }
-            steps {
-                sh 'py.test --junit-xml test_reports/results.xml test_python_pass_check.py'
-            }
-            post {
-                always {
-                    junit 'test_reports/results.xml'
+                script {
+                    sh 'pip -r requirements.txt'
                 }
             }
         }
-        stage('Deliver') {
-            agent any
-            environment {
-                VOLUME = '$(pwd)/.:/src'
-                IMAGE = 'cdrx/pyinstaller-linux:python2'
-            }
-            steps {
-                dir(path: env.BUILD_ID) {
-                    unstash(name: 'compiled-results')
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F python_pass_check.py'"
-                }
-            }
-            post {
-                success {
-                    archiveArtifacts "${env.BUILD_ID}/dist/python_pass_check"
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
-                }
-            }
+
+    stage('Linting') { // Run pylint against your code
+      steps {
+        script {
+          sh """
+          pylint **/*.py
+          """
         }
+      }
     }
+    stage('Running Unit tests') {
+            steps {
+                script {
+                    sh 'python3.7 manage.py test --keepdb --with-xunit --xunit-file=pyunit.xml --cover-xml --cover-xml-file=cov.xml tests/*.py || true'
+                    step([$class: 'CoberturaPublisher',
+                        coberturaReportFile: "cov.xml",
+                    ])
+                    junit "pyunit.xml"
+                }
+            }
+
 }
