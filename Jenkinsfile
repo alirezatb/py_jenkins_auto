@@ -1,9 +1,12 @@
 pipeline {
     agent any
-    stage('Checkout') { // Checkout (git clone ...) the projects repository
-      steps {
-        checkout scm
-      }
+    checkout([$class: 'GitSCM',
+    branches: [[name: '*/development']],
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [[$class: 'CleanCheckout']],
+    submoduleCfg: [],
+
+]
 
     stage('Installing packages') {
             steps {
