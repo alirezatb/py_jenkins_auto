@@ -41,7 +41,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts "${env.BUILD_ID}/dist/check_pass"
+                    archiveArtifacts "${env.BUILD_ID}/dist/python_pass_check"
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 }
             }
