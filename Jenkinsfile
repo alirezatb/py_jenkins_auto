@@ -8,7 +8,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'python -m py_compile main.py python_pass_check.py test_python_pass_check.py'
+                sh 'python -m py_compile main.py python_pass_check.py'
                 stash(name: 'compiled-results', includes: '*.py*')
             }
         }
@@ -19,7 +19,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'py.test --junit test_reports/results.xml test_python_pass_check.py'
+                sh 'py.test --junit-xml test_reports/results.xml test_python_pass_check.py'
             }
             post {
                 always {
