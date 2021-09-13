@@ -23,12 +23,12 @@ pipeline {
     }
     stage('Running Unit tests') {
             steps {
-                script {
-                    sh 'python3.7 manage.py test --keepdb --with-xunit --xunit-file=pyunit.xml --cover-xml --cover-xml-file=cov.xml tests/*.py || true'
-                    step([$class: 'CoberturaPublisher',
-                        coberturaReportFile: "cov.xml",
-                    ])
-                    junit "pyunit.xml"
+                sh 'python tests/*.py'
+                }
+            post {
+                always {
+                    junit 'test-reports/*.xml'
+                    }
                 }
             }
     stage ('Merge PR'){
@@ -44,5 +44,4 @@ pipeline {
             sh 'git push origin ${CHANGE_TARGET}'
         }
     }
-
 }
