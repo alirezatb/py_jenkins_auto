@@ -1,12 +1,8 @@
 pipeline {
     agent any
-    checkout([$class: 'GitSCM',
-    branches: [[name: '*/development']],
-    doGenerateSubmoduleConfigurations: false,
-    extensions: [[$class: 'CleanCheckout']],
-    submoduleCfg: [],
-
-]
+    options {
+        timetamps()
+    }
 
     stage('Installing packages') {
             steps {
@@ -35,5 +31,18 @@ pipeline {
                     junit "pyunit.xml"
                 }
             }
+    stage ('Merge PR'){
+        when {
+            branch 'PR-*'
+        }
+        steps {
+            sh 'git remote set-url origin git@github.com:alirezatb/py_jenkins_auto.git'
+            sh 'git remote set-branches --add origin ${CHANGE_TARGET}'
+            sh 'git fetch origin'
+            sh 'git checkout ${CHANGE_TARGET}'
+            sh 'git merge --no-ff ${GIT_COMMIT}'
+            sh 'git push origin ${CHANGE_TARGET}'
+        }
+    }
 
 }
