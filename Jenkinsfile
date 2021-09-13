@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    options {
-        timetamps()
-    }
-
     stages {
         stage('Installing packages') {
             steps {
