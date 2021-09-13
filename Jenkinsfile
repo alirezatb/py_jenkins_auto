@@ -1,47 +1,21 @@
 pipeline {
     agent any
-    options {
-        timetamps()
-    }
 
-    stage('Installing packages') {
+    stages {
+        stage('Build') {
             steps {
-                script {
-                    sh 'pip -r requirements.txt'
-                }
+                echo 'Building...'
             }
         }
-
-    stage('Linting') { // Run pylint against your code
-      steps {
-        script {
-          sh """
-          pylint **/*.py
-          """
-        }
-      }
-    }
-    stage('Running Unit tests') {
+        stage('Test') {
             steps {
-                sh 'python tests/*.py'
-                }
-            post {
-                always {
-                    junit 'test-reports/*.xml'
-                    }
-                }
+                echo 'Testing'
             }
-    stage ('Merge PR'){
-        when {
-            branch 'PR-*'
         }
-        steps {
-            sh 'git remote set-url origin git@github.com:alirezatb/py_jenkins_auto.git'
-            sh 'git remote set-branches --add origin ${CHANGE_TARGET}'
-            sh 'git fetch origin'
-            sh 'git checkout ${CHANGE_TARGET}'
-            sh 'git merge --no-ff ${GIT_COMMIT}'
-            sh 'git push origin ${CHANGE_TARGET}'
+        stage('Deploy') {
+            steps {
+                echo 'Deploying'
+            }
         }
     }
 }
