@@ -16,7 +16,7 @@ pipeline {
                 script {
                     BRANCH_NAME = env.CHANGE_BRANCH ? env.CHANGE_BRANCH : env.BRANCH_NAME
                     deleteDir()
-                    git url: "git@<host>:<org>/${env.PRODUCT}.git", branch: BRANCH_NAME
+                    git url: "git@github.com:alirezatb/${env.PRODUCT}.git", branch: BRANCH_NAME
                 }
             }
         }
