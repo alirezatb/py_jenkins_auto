@@ -1,8 +1,8 @@
 from datetime import datetime
 class multiply:
     def times(self, input_1):
-        get_value = datetime.now().day
-        return str(input_1) + ' ' + str(get_value)
+        set_value_1 = datetime.now().day
+        return str(input_1) + ' ' + str(set_value_1)
 
 if __name__=='__main__':
     ml = multiply()
